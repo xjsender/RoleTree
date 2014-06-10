@@ -1,0 +1,30 @@
+<apex:page controller="RoleTreeController" sidebar="false">
+    <apex:includeScript value="{!$Resource.orgchart}"/>
+    <script type='text/javascript'>
+        google.load('visualization', '1', {packages:['orgchart']});
+        google.setOnLoadCallback(drawChart);
+        function drawChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Name');
+        data.addColumn('string', 'Manager');
+        data.addColumn('string', 'ToolTip');
+
+        var rowsjson = '{!rowsjson}';
+        console.log(rowsjson);
+        var myObject = eval('(' + rowsjson + ')');
+        console.log(myObject);
+
+        myObject.forEach(function(obj) {
+            manager = obj.manager == "undefined" ? "" : obj.manager;
+            title = obj.title == "undefined" ? "" : obj.title;
+            data.addRow([{v:obj.name, f:'<a href="/'+obj.id+'" target="_blank">'+obj.tooltip+'</a>'}, manager, obj.tooltip]);
+        });
+
+        var chart = new google.visualization.OrgChart(document.getElementById('chart_div'));
+        chart.draw(data, {allowHtml:true});
+    }
+    </script>
+    <body>
+        <div id='chart_div'></div>
+    </body>
+</apex:page>
